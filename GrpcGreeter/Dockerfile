@@ -4,14 +4,18 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
+EXPOSE 8585
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["GrpcGreeter/GrpcGreeter.csproj", "GrpcGreeter/"]
-RUN dotnet restore "./GrpcGreeter/./GrpcGreeter.csproj"
+# COPY ["GrpcGreeter/GrpcGreeter.csproj", "."]
+COPY *.csproj ./
+# RUN dotnet restore "./GrpcGreeter/./GrpcGreeter.csproj"
+RUN dotnet restore
+
 COPY . .
-WORKDIR "/src/GrpcGreeter"
+WORKDIR "/src/."
 RUN dotnet build "./GrpcGreeter.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
